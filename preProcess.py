@@ -139,7 +139,7 @@ class Processor(Operation):
                 
                 try: 
                     eth = dpkt.ethernet.Ethernet(buf)
-                except Exception(e):
+                except Exception as e:
                     # logging.error("Exception(e):"+PcapPath)
                     continue
                 if not isinstance(eth.data, dpkt.ip.IP):
@@ -197,6 +197,7 @@ class Processor(Operation):
         for flow in lst_flows_onefile:
             flow.finish()
         return lst_flows_onefile
+    
     def get_label_from_filename(self, filename:str)->str:
         # 从文件名中获得标签
         if ("BLACK" in filename and "WHITE"in filename) \

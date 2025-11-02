@@ -135,17 +135,26 @@ class Model():
         # self.model.fit(self.learning_dataframe, estimator) # 最大似然学习参数
         #  BayesianNetwork(self.base_edges).fit(data, estimator=MaximumLikelihoodEstimator)
         # 优化图结构
-        hc = HillClimbSearch(self.learning_dataframe)# hillclimbsearch
-        best_model = hc.estimate(scoring_method=BicScore(self.learning_dataframe),white_list=self.base_edges) # 使用BIC评分
-        edges = best_model.edges() # 学到最优边
-        print("base edges", self.base_edges)
-        print("edges from hillclimbing:", edges)
-        # input("pause")
-        self.this_edges = edges
-        # edges -> model
-        self.model = BayesianNetwork(self.this_edges)
-        self.model.fit(self.learning_dataframe, estimator=MaximumLikelihoodEstimator)
+        # hc = HillClimbSearch(self.learning_dataframe)# hillclimbsearch
+        # best_model = hc.estimate(scoring_method=BicScore(self.learning_dataframe),white_list=self.base_edges) # 使用BIC评分
+        # edges = best_model.edges() # 学到最优边
+        # print("base edges", self.base_edges)
+        # print("edges from hillclimbing:", edges)
+        # # input("pause")
+        # self.this_edges = edges
+        # # edges -> model
+        # self.model = BayesianNetwork(self.this_edges)
+        # self.model.fit(self.learning_dataframe, estimator=MaximumLikelihoodEstimator)
         # print(self.model.nodes())
+
+        # 固定因果结构（论文原始方法）
+        print("base edges", self.base_edges)
+        self.this_edges = self.base_edges
+        # 构建固定结构的贝叶斯网络
+        self.model = BayesianNetwork(self.this_edges)
+        # 在固定结构上进行最大似然参数学习（MLE）
+        self.model.fit(self.learning_dataframe, estimator=MaximumLikelihoodEstimator)
+        print("Bayesian Network structure fixed, parameters learned by MLE.")
 
     def predict(self, onesample: List[np.ndarray]): # 写一个算法，输入一个样本，输出预测的结果
         # onesample是一个样本，一个矩阵
@@ -373,6 +382,7 @@ if __name__ == "__main__":
 
     print("onlyfromfile:", onlyfromfile)
     # load_data已修改，把有关存入数据库的代码全部注释
+    # lst_black_flows为黑样本流
     lst_black_flows = exp.load_data(dataset_dirname, blackset_dirname,root_dataset_dirpath, onlyfromfile)
     lst_white_flows = exp.load_data(dataset_dirname, whiteset_dirname,root_dataset_dirpath, onlyfromfile)
     print(lst_black_flows[0].get_BagID())

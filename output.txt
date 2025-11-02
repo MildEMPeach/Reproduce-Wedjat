@@ -1,0 +1,401 @@
+(wedjat) D:\MildEMPeach\Projects\reproduce\Reproduce-Wedjat>python main_bn.py
+An error occurred: module 'importlib.metadata' has no attribute 'packages_distributions'
+C:\Users\peach\anaconda3\envs\wedjat\lib\site-packages\google\api_core\_python_version_support.py:237: FutureWarning: You are using a non-supported Python version (3.8.20). Google will not post any further updates to google.api_core supporting this Python version. Please upgrade to the latest Python version, or at least Python 3.10, and then update google.api_core.
+  warnings.warn(message, FutureWarning)
+|MyLogger「logger」|: 
+        create logfile : D:\MildEMPeach\Projects\reproduce\Reproduce-Wedjat\log\test.log
+｜Experiment「test」｜: init! 
+DEBUG:logger:｜Experiment「test」｜ start
+实验 ｜Experiment「test」｜ 开始...
+onlyfromfile: True
+-----onlyfromfile: True
+读取文件夹:datasets\118\test_black
+｜ReadFile｜: init! 
+DEBUG:logger:｜ReadFile｜ start
+        INFO: find 200 files
+              dirpath = datasets\118\test_black
+INFO:logger:: find 200 files
+｜Processor「pcap2flow」｜: init! 
+DEBUG:logger:｜Processor「pcap2flow」｜ start
+        根据文件名获得样本的label
+process_allfile: 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 200/200 [00:04<00:00, 45.80it/s]
+         this set has 2941 flows in total
+来自文件的样本流数量:2941
+-----onlyfromfile: True
+读取文件夹:datasets\118\test_white
+｜ReadFile｜: init! 
+DEBUG:logger:｜ReadFile｜ start
+        INFO: find 200 files
+              dirpath = datasets\118\test_white
+INFO:logger:: find 200 files
+｜Processor「pcap2flow」｜: init!
+DEBUG:logger:｜Processor「pcap2flow」｜ start
+        根据文件名获得样本的label
+process_allfile: 100%|█████████████████████████████████████████████████████████████████████████████████████████████| 200/200 [00:06<00:00, 28.94it/s]
+         this set has 1300 flows in total
+来自文件的样本流数量:1300
+('10.0.2.15', '104.21.19.94', 'datasets\\118\\test_black\\0105040f5398800ef038d15263c61b8b_120_2021-02-03-06-36-08_-1_x64.exe_7768324.x64.exe.cap')
+黑样本流数量:2941
+白样本流数量:1300
+｜PacketFeatures｜: init! 
+DEBUG:logger:｜PacketFeatures｜ start
+黑样本包数量：97147
+白样本包数量：219684
+(8000, 3)
+C:\Users\peach\anaconda3\envs\wedjat\lib\site-packages\sklearn\cluster\_kmeans.py:1416: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
+  super()._check_params_vs_input(X, default_n_init=10)
+cnt_each_cluster: [2831, 4720, 351, 36, 10, 7, 45]
+每个簇的黑样本纯度:[0.5058283292122925, 0.4875, 0.5413105413105413, 0.9722222222222222, 0.8, 1.0, 0.6]
+每个簇的白样本纯度:[0.4941716707877075, 0.5125, 0.4586894586894587, 0.027777777777777776, 0.2, 0.0, 0.4]
+每个簇的最大纯度的平均值:0.704551584677865
+每个簇的最大纯度的标签:[1, 0, 1, 1, 1, 1, 1]
+cnt_each_cluster: [2831, 4720, 351, 36, 10, 7, 45]
+聚类的指标:0.704551584677865
+cnt_each_cluster: [2831, 4720, 351, 36, 10, 7, 45]
+MapClass:       black:449,white0,unknown:7551
+｜Aggreator「3grain」｜: init! 
+DEBUG:logger:｜Aggreator「3grain」｜ start
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 2941/2941 [00:00<00:00, 25329.41it/s]
+｜Aggreator「3grain」｜: aggregate flow to bag successfully!
+        INFO: there are 1243 bags from 2941 flows.
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 1300/1300 [00:00<00:00, 12399.22it/s]
+｜Aggreator「3grain」｜: aggregate flow to bag successfully!
+        INFO: there are 343 bags from 1300 flows.
+构造训练数据: 100%|████████████████████████████████████████████████████████████████████████████████████████████████| 343/343 [00:19<00:00, 17.61it/s]
+allsamples: 304
+each bag: 2
+each flow: 25
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████| 304/304 [00:00<00:00, 551.27it/s]
+训练数据:    Packet_1_1  Packet_1_2  Packet_1_3  Packet_1_4  Packet_1_5  ...  Packet_2_21  Packet_2_22  Packet_2_23  Packet_2_24  Packet_2_25
+0           1           1           0           1           6  ...           -1           -1           -1           -1           -1
+1           1           1           2           6           0  ...           -1           -1           -1           -1           -1
+2           1           2           0           1           6  ...           -1           -1           -1           -1           -1
+3           1           1           0           1           3  ...           -1           -1           -1           -1           -1
+4           1           1           0           2           3  ...           -1           -1           -1           -1           -1
+
+[5 rows x 50 columns]
+训练数据个数: (304, 50)
+base edges [('Packet_1_1', 'Packet_1_2'), ('Packet_1_2', 'Packet_1_3'), ('Packet_1_3', 'Packet_1_4'), ('Packet_1_4', 'Packet_1_5'), ('Packet_1_5', 'Packet_1_6'), ('Packet_1_6', 'Packet_1_7'), ('Packet_1_7', 'Packet_1_8'), ('Packet_1_8', 'Packet_1_9'), ('Packet_1_9', 'Packet_1_10'), ('Packet_1_10', 'Packet_1_11'), ('Packet_1_11', 'Packet_1_12'), ('Packet_1_12', 'Packet_1_13'), ('Packet_1_13', 'Packet_1_14'), ('Packet_1_14', 'Packet_1_15'), ('Packet_1_15', 'Packet_1_16'), ('Packet_1_16', 'Packet_1_17'), ('Packet_1_17', 'Packet_1_18'), ('Packet_1_18', 'Packet_1_19'), ('Packet_1_19', 'Packet_1_20'), ('Packet_1_20', 'Packet_1_21'), ('Packet_1_21', 'Packet_1_22'), ('Packet_1_22', 'Packet_1_23'), ('Packet_1_23', 'Packet_1_24'), ('Packet_1_24', 'Packet_1_25'), ('Packet_1_1', 'Packet_2_1'), ('Packet_1_2', 'Packet_2_2'), ('Packet_2_1', 'Packet_2_2'), ('Packet_1_3', 'Packet_2_3'), ('Packet_2_2', 'Packet_2_3'), ('Packet_1_4', 'Packet_2_4'), ('Packet_2_3', 'Packet_2_4'), ('Packet_1_5', 'Packet_2_5'), ('Packet_2_4', 'Packet_2_5'), ('Packet_1_6', 'Packet_2_6'), ('Packet_2_5', 'Packet_2_6'), ('Packet_1_7', 'Packet_2_7'), ('Packet_2_6', 'Packet_2_7'), ('Packet_1_8', 'Packet_2_8'), ('Packet_2_7', 'Packet_2_8'), ('Packet_1_9', 'Packet_2_9'), ('Packet_2_8', 'Packet_2_9'), ('Packet_1_10', 'Packet_2_10'), ('Packet_2_9', 'Packet_2_10'), ('Packet_1_11', 'Packet_2_11'), ('Packet_2_10', 'Packet_2_11'), ('Packet_1_12', 'Packet_2_12'), ('Packet_2_11', 'Packet_2_12'), ('Packet_1_13', 'Packet_2_13'), ('Packet_2_12', 'Packet_2_13'), ('Packet_1_14', 'Packet_2_14'), ('Packet_2_13', 'Packet_2_14'), ('Packet_1_15', 'Packet_2_15'), ('Packet_2_14', 'Packet_2_15'), ('Packet_1_16', 'Packet_2_16'), ('Packet_2_15', 'Packet_2_16'), ('Packet_1_17', 'Packet_2_17'), ('Packet_2_16', 'Packet_2_17'), ('Packet_1_18', 'Packet_2_18'), ('Packet_2_17', 'Packet_2_18'), ('Packet_1_19', 'Packet_2_19'), ('Packet_2_18', 'Packet_2_19'), ('Packet_1_20', 'Packet_2_20'), ('Packet_2_19', 'Packet_2_20'), ('Packet_1_21', 'Packet_2_21'), ('Packet_2_20', 'Packet_2_21'), ('Packet_1_22', 'Packet_2_22'), ('Packet_2_21', 'Packet_2_22'), ('Packet_1_23', 'Packet_2_23'), ('Packet_2_22', 'Packet_2_23'), ('Packet_1_24', 'Packet_2_24'), ('Packet_2_23', 'Packet_2_24'), ('Packet_1_25', 'Packet_2_25'), ('Packet_2_24', 'Packet_2_25')]
+Bayesian Network structure fixed, parameters learned by MLE.
+True
+训练数据： 304
+训练数据阈值设置:   0%|                                                                                                       | 0/50 [00:00<?, ?it/s]C:\Users\peach\anaconda3\envs\wedjat\lib\site-packages\pgmpy\factors\discrete\DiscreteFactor.py:797: RuntimeWarning: invalid value encountered in divide
+  phi.values = phi.values / phi1.values
+cnt_predict_right: 13
+cnt_predict_wrong: 7
+right ratio: 0.65
+训练数据阈值设置:   2%|█▉                                                                                             | 1/50 [00:03<03:15,  3.98s/it]cnt_predict_right: 12
+cnt_predict_wrong: 5
+right ratio: 0.7058823529411765
+训练数据阈值设置:   4%|███▊                                                                                           | 2/50 [00:07<03:00,  3.77s/it]cnt_predict_right: 14
+cnt_predict_wrong: 10
+right ratio: 0.5833333333333334
+训练数据阈值设置:   6%|█████▋                                                                                         | 3/50 [00:12<03:14,  4.13s/it]cnt_predict_right: 5
+cnt_predict_wrong: 9
+right ratio: 0.35714285714285715
+训练数据阈值设置:   8%|███████▌                                                                                       | 4/50 [00:15<02:53,  3.77s/it]cnt_predict_right: 6
+cnt_predict_wrong: 4
+right ratio: 0.6
+训练数据阈值设置:  10%|█████████▌                                                                                     | 5/50 [00:18<02:33,  3.41s/it]cnt_predict_right: 13
+cnt_predict_wrong: 11
+right ratio: 0.5416666666666666
+训练数据阈值设置:  12%|███████████▍                                                                                   | 6/50 [00:22<02:46,  3.79s/it]cnt_predict_right: 26
+cnt_predict_wrong: 16
+right ratio: 0.6190476190476191
+训练数据阈值设置:  14%|█████████████▎                                                                                 | 7/50 [00:29<03:25,  4.79s/it]cnt_predict_right: 21
+cnt_predict_wrong: 14
+right ratio: 0.6
+训练数据阈值设置:  16%|███████████████▏                                                                               | 8/50 [00:35<03:35,  5.12s/it]cnt_predict_right: 5
+cnt_predict_wrong: 6
+right ratio: 0.45454545454545453
+训练数据阈值设置:  18%|█████████████████                                                                              | 9/50 [00:38<03:01,  4.42s/it]cnt_predict_right: 26
+cnt_predict_wrong: 19
+right ratio: 0.5777777777777777
+训练数据阈值设置:  20%|██████████████████▊                                                                           | 10/50 [00:45<03:32,  5.31s/it]cnt_predict_right: 33
+cnt_predict_wrong: 5
+right ratio: 0.868421052631579
+训练数据阈值设置:  22%|████████████████████▋                                                                         | 11/50 [00:52<03:41,  5.68s/it]cnt_predict_right: 12
+cnt_predict_wrong: 9
+right ratio: 0.5714285714285714
+训练数据阈值设置:  24%|██████████████████████▌                                                                       | 12/50 [00:56<03:25,  5.40s/it]cnt_predict_right: 13
+cnt_predict_wrong: 11
+right ratio: 0.5416666666666666
+训练数据阈值设置:  26%|████████████████████████▍                                                                     | 13/50 [01:01<03:13,  5.23s/it]cnt_predict_right: 24
+cnt_predict_wrong: 2
+right ratio: 0.9230769230769231
+训练数据阈值设置:  28%|██████████████████████████▎                                                                   | 14/50 [01:06<03:06,  5.18s/it]cnt_predict_right: 18
+cnt_predict_wrong: 7
+right ratio: 0.72
+训练数据阈值设置:  30%|████████████████████████████▏                                                                 | 15/50 [01:11<02:56,  5.06s/it]cnt_predict_right: 20
+cnt_predict_wrong: 16
+right ratio: 0.5555555555555556
+训练数据阈值设置:  32%|██████████████████████████████                                                                | 16/50 [01:17<03:04,  5.42s/it]cnt_predict_right: 5
+cnt_predict_wrong: 7
+right ratio: 0.4166666666666667
+训练数据阈值设置:  34%|███████████████████████████████▉                                                              | 17/50 [01:20<02:36,  4.73s/it]cnt_predict_right: 11
+cnt_predict_wrong: 13
+right ratio: 0.4583333333333333
+训练数据阈值设置:  36%|█████████████████████████████████▊                                                            | 18/50 [01:25<02:31,  4.73s/it]cnt_predict_right: 6
+cnt_predict_wrong: 4
+right ratio: 0.6
+训练数据阈值设置:  38%|███████████████████████████████████▋                                                          | 19/50 [01:28<02:09,  4.16s/it]cnt_predict_right: 6
+cnt_predict_wrong: 4
+right ratio: 0.6
+训练数据阈值设置:  40%|█████████████████████████████████████▌                                                        | 20/50 [01:31<01:53,  3.77s/it]cnt_predict_right: 6
+cnt_predict_wrong: 4
+right ratio: 0.6
+训练数据阈值设置:  42%|███████████████████████████████████████▍                                                      | 21/50 [01:34<01:41,  3.49s/it]cnt_predict_right: 6
+cnt_predict_wrong: 4
+right ratio: 0.6
+训练数据阈值设置:  44%|█████████████████████████████████████████▎                                                    | 22/50 [01:37<01:32,  3.31s/it]cnt_predict_right: 6
+cnt_predict_wrong: 4
+right ratio: 0.6
+训练数据阈值设置:  46%|███████████████████████████████████████████▏                                                  | 23/50 [01:39<01:25,  3.17s/it]cnt_predict_right: 5
+cnt_predict_wrong: 6
+right ratio: 0.45454545454545453
+训练数据阈值设置:  48%|█████████████████████████████████████████████                                                 | 24/50 [01:42<01:21,  3.13s/it]cnt_predict_right: 4
+cnt_predict_wrong: 6
+right ratio: 0.4
+训练数据阈值设置:  50%|███████████████████████████████████████████████                                               | 25/50 [01:45<01:16,  3.05s/it]cnt_predict_right: 8
+cnt_predict_wrong: 6
+right ratio: 0.5714285714285714
+训练数据阈值设置:  52%|████████████████████████████████████████████████▉                                             | 26/50 [01:49<01:15,  3.15s/it]cnt_predict_right: 6
+cnt_predict_wrong: 6
+right ratio: 0.5
+训练数据阈值设置:  54%|██████████████████████████████████████████████████▊                                           | 27/50 [01:52<01:12,  3.14s/it]cnt_predict_right: 34
+cnt_predict_wrong: 6
+right ratio: 0.85
+训练数据阈值设置:  56%|████████████████████████████████████████████████████▋                                         | 28/50 [01:59<01:36,  4.37s/it]cnt_predict_right: 7
+cnt_predict_wrong: 2
+right ratio: 0.7777777777777778
+训练数据阈值设置:  58%|██████████████████████████████████████████████████████▌                                       | 29/50 [02:02<01:21,  3.89s/it]cnt_predict_right: 15
+cnt_predict_wrong: 4
+right ratio: 0.7894736842105263
+训练数据阈值设置:  60%|████████████████████████████████████████████████████████▍                                     | 30/50 [02:06<01:20,  4.01s/it]cnt_predict_right: 7
+cnt_predict_wrong: 6
+right ratio: 0.5384615384615384
+训练数据阈值设置:  62%|██████████████████████████████████████████████████████████▎                                   | 31/50 [02:09<01:11,  3.78s/it]cnt_predict_right: 8
+cnt_predict_wrong: 16
+right ratio: 0.3333333333333333
+训练数据阈值设置:  64%|████████████████████████████████████████████████████████████▏                                 | 32/50 [02:14<01:13,  4.08s/it]cnt_predict_right: 25
+cnt_predict_wrong: 6
+right ratio: 0.8064516129032258
+训练数据阈值设置:  66%|██████████████████████████████████████████████████████████████                                | 33/50 [02:20<01:17,  4.57s/it]cnt_predict_right: 18
+cnt_predict_wrong: 14
+right ratio: 0.5625
+训练数据阈值设置:  68%|███████████████████████████████████████████████████████████████▉                              | 34/50 [02:26<01:21,  5.10s/it]cnt_predict_right: 18
+cnt_predict_wrong: 17
+right ratio: 0.5142857142857142
+训练数据阈值设置:  70%|█████████████████████████████████████████████████████████████████▊                            | 35/50 [02:32<01:21,  5.42s/it]cnt_predict_right: 16
+cnt_predict_wrong: 10
+right ratio: 0.6153846153846154
+训练数据阈值设置:  72%|███████████████████████████████████████████████████████████████████▋                          | 36/50 [02:37<01:14,  5.30s/it]cnt_predict_right: 15
+cnt_predict_wrong: 9
+right ratio: 0.625
+训练数据阈值设置:  74%|█████████████████████████████████████████████████████████████████████▌                        | 37/50 [02:42<01:06,  5.11s/it]cnt_predict_right: 21
+cnt_predict_wrong: 11
+right ratio: 0.65625
+训练数据阈值设置:  76%|███████████████████████████████████████████████████████████████████████▍                      | 38/50 [02:48<01:03,  5.32s/it]cnt_predict_right: 20
+cnt_predict_wrong: 7
+right ratio: 0.7407407407407407
+训练数据阈值设置:  78%|█████████████████████████████████████████████████████████████████████████▎                    | 39/50 [02:53<00:57,  5.26s/it]cnt_predict_right: 7
+cnt_predict_wrong: 7
+right ratio: 0.5
+训练数据阈值设置:  80%|███████████████████████████████████████████████████████████████████████████▏                  | 40/50 [02:56<00:46,  4.69s/it]cnt_predict_right: 6
+cnt_predict_wrong: 4
+right ratio: 0.6
+训练数据阈值设置:  82%|█████████████████████████████████████████████████████████████████████████████                 | 41/50 [02:59<00:37,  4.13s/it]cnt_predict_right: 30
+cnt_predict_wrong: 9
+right ratio: 0.7692307692307693
+训练数据阈值设置:  84%|██████████████████████████████████████████████████████████████████████████████▉               | 42/50 [03:06<00:40,  5.01s/it]cnt_predict_right: 21
+cnt_predict_wrong: 10
+right ratio: 0.6774193548387096
+训练数据阈值设置:  86%|████████████████████████████████████████████████████████████████████████████████▊             | 43/50 [03:12<00:36,  5.24s/it]cnt_predict_right: 27
+cnt_predict_wrong: 8
+right ratio: 0.7714285714285715
+训练数据阈值设置:  88%|██████████████████████████████████████████████████████████████████████████████████▋           | 44/50 [03:18<00:33,  5.60s/it]cnt_predict_right: 27
+cnt_predict_wrong: 15
+right ratio: 0.6428571428571429
+训练数据阈值设置:  90%|████████████████████████████████████████████████████████████████████████████████████▌         | 45/50 [03:26<00:30,  6.08s/it]cnt_predict_right: 6
+cnt_predict_wrong: 11
+right ratio: 0.35294117647058826
+训练数据阈值设置:  92%|██████████████████████████████████████████████████████████████████████████████████████▍       | 46/50 [03:29<00:21,  5.37s/it]cnt_predict_right: 12
+cnt_predict_wrong: 12
+right ratio: 0.5
+训练数据阈值设置:  94%|████████████████████████████████████████████████████████████████████████████████████████▎     | 47/50 [03:34<00:15,  5.13s/it]cnt_predict_right: 7
+cnt_predict_wrong: 6
+right ratio: 0.5384615384615384
+训练数据阈值设置:  96%|██████████████████████████████████████████████████████████████████████████████████████████▏   | 48/50 [03:37<00:09,  4.55s/it]cnt_predict_right: 10
+cnt_predict_wrong: 12
+right ratio: 0.45454545454545453
+训练数据阈值设置:  98%|████████████████████████████████████████████████████████████████████████████████████████████  | 49/50 [03:41<00:04,  4.49s/it]cnt_predict_right: 5
+cnt_predict_wrong: 7
+right ratio: 0.4166666666666667
+训练数据阈值设置: 100%|██████████████████████████████████████████████████████████████████████████████████████████████| 50/50 [03:45<00:00,  4.51s/it]
+推断时间: [0.13068771362304688, 0.12468147277832031, 0.13139963150024414, 0.12613272666931152, 0.13196492195129395, 0.1279606819152832, 0.1319425106048584, 0.12810206413269043, 0.1319596767425537, 0.5431156158447266, 0.1360328197479248, 0.13011407852172852]
+平均推断时间： 0.16450782616933188
+总推断时间： 1.9740939140319824
+[0.65, 0.7058823529411765, 0.5833333333333334, 0.35714285714285715, 0.6, 0.5416666666666666, 0.6190476190476191, 0.6, 0.45454545454545453, 0.5777777777777777, 0.868421052631579, 0.5714285714285714, 0.5416666666666666, 0.9230769230769231, 0.72, 0.5555555555555556, 0.4166666666666667, 0.4583333333333333, 0.6, 0.6, 0.6, 0.6, 0.6, 0.45454545454545453, 0.4, 0.5714285714285714, 0.5, 0.85, 0.7777777777777778, 0.7894736842105263, 0.5384615384615384, 0.3333333333333333, 0.8064516129032258, 0.5625, 0.5142857142857142, 0.6153846153846154, 0.625, 0.65625, 0.7407407407407407, 0.5, 0.6, 0.7692307692307693, 0.6774193548387096, 0.7714285714285715, 0.6428571428571429, 0.35294117647058826, 0.5, 0.5384615384615384, 0.45454545454545453, 0.4166666666666667]    
+pause:  训练阶段白样本阈值
+处理测试数据->样本: 100%|██████████████████████████████████████████████████████████████████████████████████████| 1243/1243 [00:01<00:00, 1009.76it/s]
+allsamples: 575
+each bag: 2
+each flow: 25
+测试数据：
+testing phase:   0%|                                                                                                          | 0/50 [00:00<?, ?it/s]C:\Users\peach\anaconda3\envs\wedjat\lib\site-packages\pgmpy\factors\discrete\DiscreteFactor.py:797: RuntimeWarning: invalid value encountered in divide
+  phi.values = phi.values / phi1.values
+cnt_predict_right: 3
+cnt_predict_wrong: 2
+right ratio: 0.6
+testing phase:   2%|█▉                                                                                                | 1/50 [00:02<01:43,  2.12s/it]cnt_predict_right: 0
+cnt_predict_wrong: 15
+right ratio: 0.0
+testing phase:   4%|███▉                                                                                              | 2/50 [00:03<01:28,  1.85s/it]C:\Users\peach\anaconda3\envs\wedjat\lib\site-packages\pgmpy\factors\discrete\DiscreteFactor.py:489: RuntimeWarning: invalid value encountered in divide
+  phi.values = phi.values / phi.values.sum()
+cnt_predict_right: 15
+cnt_predict_wrong: 28
+right ratio: 0.3488372093023256
+testing phase:   6%|█████▉                                                                                            | 3/50 [00:10<03:21,  4.28s/it]cnt_predict_right: 13
+cnt_predict_wrong: 25
+right ratio: 0.34210526315789475
+testing phase:   8%|███████▊                                                                                          | 4/50 [00:16<03:48,  4.97s/it]cnt_predict_right: 15
+cnt_predict_wrong: 9
+right ratio: 0.625
+testing phase:  10%|█████████▊                                                                                        | 5/50 [00:21<03:39,  4.88s/it]cnt_predict_right: 21
+cnt_predict_wrong: 28
+right ratio: 0.42857142857142855
+testing phase:  12%|███████████▊                                                                                      | 6/50 [00:29<04:19,  5.89s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  14%|█████████████▋                                                                                    | 7/50 [00:31<03:22,  4.70s/it]cnt_predict_right: 3
+cnt_predict_wrong: 9
+right ratio: 0.25
+testing phase:  16%|███████████████▋                                                                                  | 8/50 [00:34<02:47,  3.99s/it]cnt_predict_right: 9
+cnt_predict_wrong: 15
+right ratio: 0.375
+testing phase:  18%|█████████████████▋                                                                                | 9/50 [00:39<02:53,  4.23s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  20%|███████████████████▍                                                                             | 10/50 [00:41<02:25,  3.64s/it]cnt_predict_right: 5
+cnt_predict_wrong: 19
+right ratio: 0.20833333333333334
+testing phase:  22%|█████████████████████▎                                                                           | 11/50 [00:46<02:34,  3.95s/it]cnt_predict_right: 11
+cnt_predict_wrong: 13
+right ratio: 0.4583333333333333
+testing phase:  24%|███████████████████████▎                                                                         | 12/50 [00:50<02:37,  4.16s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  26%|█████████████████████████▏                                                                       | 13/50 [00:52<02:11,  3.56s/it]cnt_predict_right: 3
+cnt_predict_wrong: 10
+right ratio: 0.23076923076923078
+testing phase:  28%|███████████████████████████▏                                                                     | 14/50 [00:55<01:53,  3.17s/it]cnt_predict_right: 17
+cnt_predict_wrong: 32
+right ratio: 0.3469387755102041
+testing phase:  30%|█████████████████████████████                                                                    | 15/50 [01:03<02:45,  4.72s/it]cnt_predict_right: 0
+cnt_predict_wrong: 33
+right ratio: 0.0
+testing phase:  32%|███████████████████████████████                                                                  | 16/50 [01:04<02:08,  3.77s/it]cnt_predict_right: 3
+cnt_predict_wrong: 21
+right ratio: 0.125
+testing phase:  34%|████████████████████████████████▉                                                                | 17/50 [01:09<02:13,  4.06s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  36%|██████████████████████████████████▉                                                              | 18/50 [01:12<01:54,  3.56s/it]cnt_predict_right: 11
+cnt_predict_wrong: 13
+right ratio: 0.4583333333333333
+testing phase:  38%|████████████████████████████████████▊                                                            | 19/50 [01:16<02:01,  3.93s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  40%|██████████████████████████████████████▊                                                          | 20/50 [01:19<01:43,  3.45s/it]cnt_predict_right: 0
+cnt_predict_wrong: 7
+right ratio: 0.0
+testing phase:  42%|████████████████████████████████████████▋                                                        | 21/50 [01:20<01:23,  2.89s/it]cnt_predict_right: 4
+cnt_predict_wrong: 14
+right ratio: 0.2222222222222222
+testing phase:  44%|██████████████████████████████████████████▋                                                      | 22/50 [01:25<01:34,  3.37s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  46%|████████████████████████████████████████████▌                                                    | 23/50 [01:27<01:22,  3.07s/it]cnt_predict_right: 9
+cnt_predict_wrong: 15
+right ratio: 0.375
+testing phase:  48%|██████████████████████████████████████████████▌                                                  | 24/50 [01:32<01:33,  3.58s/it]cnt_predict_right: 0
+cnt_predict_wrong: 24
+right ratio: 0.0
+testing phase:  50%|████████████████████████████████████████████████▌                                                | 25/50 [01:34<01:15,  3.00s/it]cnt_predict_right: 9
+cnt_predict_wrong: 15
+right ratio: 0.375
+testing phase:  52%|██████████████████████████████████████████████████▍                                              | 26/50 [01:38<01:24,  3.50s/it]cnt_predict_right: 10
+cnt_predict_wrong: 14
+right ratio: 0.4166666666666667
+testing phase:  54%|████████████████████████████████████████████████████▍                                            | 27/50 [01:43<01:28,  3.83s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  56%|██████████████████████████████████████████████████████▎                                          | 28/50 [01:45<01:13,  3.33s/it]cnt_predict_right: 2
+cnt_predict_wrong: 22
+right ratio: 0.08333333333333333
+testing phase:  58%|████████████████████████████████████████████████████████▎                                        | 29/50 [01:50<01:17,  3.69s/it]cnt_predict_right: 0
+cnt_predict_wrong: 16
+right ratio: 0.0
+testing phase:  60%|██████████████████████████████████████████████████████████▏                                      | 30/50 [01:51<01:01,  3.05s/it]cnt_predict_right: 4
+cnt_predict_wrong: 9
+right ratio: 0.3076923076923077
+testing phase:  62%|████████████████████████████████████████████████████████████▏                                    | 31/50 [01:54<00:58,  3.09s/it]cnt_predict_right: 11
+cnt_predict_wrong: 13
+right ratio: 0.4583333333333333
+testing phase:  64%|██████████████████████████████████████████████████████████████                                   | 32/50 [01:59<01:04,  3.58s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  66%|████████████████████████████████████████████████████████████████                                 | 33/50 [02:01<00:54,  3.19s/it]cnt_predict_right: 5
+cnt_predict_wrong: 19
+right ratio: 0.20833333333333334
+testing phase:  68%|█████████████████████████████████████████████████████████████████▉                               | 34/50 [02:04<00:48,  3.05s/it]cnt_predict_right: 2
+cnt_predict_wrong: 22
+right ratio: 0.08333333333333333
+testing phase:  70%|███████████████████████████████████████████████████████████████████▉                             | 35/50 [02:09<00:52,  3.52s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  72%|█████████████████████████████████████████████████████████████████████▊                           | 36/50 [02:11<00:43,  3.14s/it]cnt_predict_right: 2
+cnt_predict_wrong: 22
+right ratio: 0.08333333333333333
+testing phase:  74%|███████████████████████████████████████████████████████████████████████▊                         | 37/50 [02:15<00:46,  3.55s/it]cnt_predict_right: 11
+cnt_predict_wrong: 13
+right ratio: 0.4583333333333333
+testing phase:  76%|█████████████████████████████████████████████████████████████████████████▋                       | 38/50 [02:20<00:46,  3.84s/it]cnt_predict_right: 5
+cnt_predict_wrong: 10
+right ratio: 0.3333333333333333
+testing phase:  78%|███████████████████████████████████████████████████████████████████████████▋                     | 39/50 [02:23<00:40,  3.69s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  80%|█████████████████████████████████████████████████████████████████████████████▌                   | 40/50 [02:25<00:32,  3.22s/it]cnt_predict_right: 3
+cnt_predict_wrong: 9
+right ratio: 0.25
+testing phase:  82%|███████████████████████████████████████████████████████████████████████████████▌                 | 41/50 [02:28<00:28,  3.16s/it]cnt_predict_right: 8
+cnt_predict_wrong: 7
+right ratio: 0.5333333333333333
+testing phase:  84%|█████████████████████████████████████████████████████████████████████████████████▍               | 42/50 [02:32<00:26,  3.27s/it]cnt_predict_right: 0
+cnt_predict_wrong: 24
+right ratio: 0.0
+testing phase:  86%|███████████████████████████████████████████████████████████████████████████████████▍             | 43/50 [02:34<00:19,  2.81s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  88%|█████████████████████████████████████████████████████████████████████████████████████▎           | 44/50 [02:36<00:15,  2.65s/it]cnt_predict_right: 3
+cnt_predict_wrong: 9
+right ratio: 0.25
+testing phase:  90%|███████████████████████████████████████████████████████████████████████████████████████▎         | 45/50 [02:38<00:13,  2.61s/it]cnt_predict_right: 3
+cnt_predict_wrong: 3
+right ratio: 0.5
+testing phase:  92%|█████████████████████████████████████████████████████████████████████████████████████████▏       | 46/50 [02:41<00:09,  2.49s/it]cnt_predict_right: 11
+cnt_predict_wrong: 13
+right ratio: 0.4583333333333333
+testing phase:  94%|███████████████████████████████████████████████████████████████████████████████████████████▏     | 47/50 [02:45<00:09,  3.09s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase:  96%|█████████████████████████████████████████████████████████████████████████████████████████████    | 48/50 [02:47<00:05,  2.81s/it]cnt_predict_right: 5
+cnt_predict_wrong: 16
+right ratio: 0.23809523809523808
+testing phase:  98%|███████████████████████████████████████████████████████████████████████████████████████████████  | 49/50 [02:51<00:03,  3.15s/it]cnt_predict_right: 2
+cnt_predict_wrong: 4
+right ratio: 0.3333333333333333
+testing phase: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████| 50/50 [02:54<00:00,  3.48s/it]
+[0.6, 0.0, 0.3488372093023256, 0.34210526315789475, 0.625, 0.42857142857142855, 0.3333333333333333, 0.25, 0.375, 0.3333333333333333, 0.20833333333333334, 0.4583333333333333, 0.3333333333333333, 0.23076923076923078, 0.3469387755102041, 0.0, 0.125, 0.3333333333333333, 0.4583333333333333, 0.3333333333333333, 0.0, 0.2222222222222222, 0.3333333333333333, 0.375, 0.0, 0.375, 0.4166666666666667, 0.3333333333333333, 0.08333333333333333, 0.0, 0.3076923076923077, 0.4583333333333333, 0.3333333333333333, 0.20833333333333334, 0.08333333333333333, 0.3333333333333333, 0.08333333333333333, 0.4583333333333333, 0.3333333333333333, 0.3333333333333333, 0.25, 0.5333333333333333, 0.0, 0.3333333333333333, 0.25, 0.5, 0.4583333333333333, 0.3333333333333333, 0.23809523809523808, 0.3333333333333333]
+2 25
