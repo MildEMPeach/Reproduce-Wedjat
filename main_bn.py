@@ -24,15 +24,15 @@ from config import *
 from preProcess import *
 from aggreate import *
 from extractFeatures import *
-from kernelkmeans import *
+# from kernelkmeans import *
 
 
 # structure/
 from structure.Flow  import *
 from structure.Packet import *
 from structure.Bag import *
-import scienceplots
-import umap
+
+# import umap
 import scienceplots # 如果不存在，需要pip install scienceplots
 plt.style.available # 查看可用的样式    
 plt.style.use(['science','ieee']) # 选择一个样式
@@ -51,14 +51,14 @@ from utils.MyMongoDB import *
 
 log_filename = "test.log"
 # 使用的数据集名
-root_dataset_dirpath = '/data/users/gaoli/exp_Robust/datasets'
-dataset_dirname = "mytest"
+root_dataset_dirpath = 'datasets'
+dataset_dirname = "118"
 
 blackset_dirname = "test_black" # in dir[dataset_name]
 whiteset_dirname = "test_white" # in dir[dataset_name]
 blackset_dirpath = os.path.join(dataset_dir, dataset_dirname, blackset_dirname)
 whiteset_dirpath = os.path.join(dataset_dir, dataset_dirname, whiteset_dirname)
-blackset_dirpath = os.path.join(dataset_dir, dataset_dirname, blackset_dirname)
+
 c_0 = "#8dabdc"# 天蓝色
 c_1 = "#c45c0b" # 桔红色
 c_2 = "#e5b051" # 黄色
@@ -248,27 +248,27 @@ class Experiment(Operation):
         # 不止从文件中读取
         # # 数据库中存在， 从数据库中读取
         # # 否则， 从文件中读取
-        if isexists_db_col(this_dataset_dirname, this_subset_dirname) and onlyfromfile==False:
-            self.print_right(f"数据库「{this_dataset_dirname}:{this_subset_dirname}」已存在，连接数据库")
-            mydb = MyMongoDB(database=this_dataset_dirname, collection=this_subset_dirname)
-            flow_read_from_db= FlowManager(logger=mylogger,name="db->flow")
-            flow_read_from_db.create_from_mongodb(mydb)
-            lst_flows = flow_read_from_db.get_datas()
-            self.print_info(f"\t来自数据库「{this_dataset_dirname}/{this_subset_dirname}」的样本流数量:{len(lst_flows)}")
-            return lst_flows
-        # 只从文件夹中读取，并询问是否覆盖数据库
-        elif onlyfromfile and isexists_db_col(this_dataset_dirname, this_subset_dirname):
-            cover_db_col = input("数据库已存在，但从文件读取数据，是否覆盖数据库？(y/n)")
-            if cover_db_col == "y":
-                self.print_attention(f"覆盖数据库「{this_dataset_dirname}:{this_subset_dirname}」")
-                mydb = MyMongoDB(database=this_dataset_dirname, collection=this_subset_dirname)
-                mydb.delete_all()
-            else:
-                self.print_attention(f"不覆盖数据库「{this_dataset_dirname}:{this_subset_dirname}」,从文件读取的数据会加入数据库中")
+        # if isexists_db_col(this_dataset_dirname, this_subset_dirname) and onlyfromfile==False:
+        #     self.print_right(f"数据库「{this_dataset_dirname}:{this_subset_dirname}」已存在，连接数据库")
+        #     mydb = MyMongoDB(database=this_dataset_dirname, collection=this_subset_dirname)
+        #     flow_read_from_db= FlowManager(logger=mylogger,name="db->flow")
+        #     flow_read_from_db.create_from_mongodb(mydb)
+        #     lst_flows = flow_read_from_db.get_datas()
+        #     self.print_info(f"\t来自数据库「{this_dataset_dirname}/{this_subset_dirname}」的样本流数量:{len(lst_flows)}")
+        #     return lst_flows
+        # # 只从文件夹中读取，并询问是否覆盖数据库
+        # elif onlyfromfile and isexists_db_col(this_dataset_dirname, this_subset_dirname):
+        #     cover_db_col = input("数据库已存在，但从文件读取数据，是否覆盖数据库？(y/n)")
+        #     if cover_db_col == "y":
+        #         self.print_attention(f"覆盖数据库「{this_dataset_dirname}:{this_subset_dirname}」")
+        #         mydb = MyMongoDB(database=this_dataset_dirname, collection=this_subset_dirname)
+        #         mydb.delete_all()
+        #     else:
+        #         self.print_attention(f"不覆盖数据库「{this_dataset_dirname}:{this_subset_dirname}」,从文件读取的数据会加入数据库中")
                 
 
-        else: # 不存在数据库，创建数据库
-            self.print_right(f"数据库「{this_dataset_dirname}:{this_subset_dirname}」不存在，创建数据库")
+        # else: # 不存在数据库，创建数据库
+        #     self.print_right(f"数据库「{this_dataset_dirname}:{this_subset_dirname}」不存在，创建数据库")
         # elif/else -> 从文件夹中读取
             
         this_subset_dirpath = self._get_subset_dirpath(this_dataset_dirname, this_subset_dirname, root_dataset_dirpath)
@@ -279,15 +279,15 @@ class Experiment(Operation):
         # # 创建流处理器： 读取文件，创建流
         lst_flows = Processor(logger=mylogger, auto_label=True).process_allfile(lst_files)
         # # 创建流管理器： 存储流 
-        flow_store_to_db = FlowManager(lst_flows,logger=mylogger,name="flow->db")
-        self.print_right(f"文件->流读取完成，存入数据库")
+        # flow_store_to_db = FlowManager(lst_flows,logger=mylogger,name="flow->db")
+        # self.print_right(f"文件->流读取完成，存入数据库")
         # # 链接数据库
-        mydb = MyMongoDB(database=this_dataset_dirname, collection=this_subset_dirname)
+        # mydb = MyMongoDB(database=this_dataset_dirname, collection=this_subset_dirname)
         # # 流管理器存储流到数据库
-        flow_store_to_db.save_to_mongodb(mydb)
-        self.print_right(f"流->数据库存储完成")
+        # flow_store_to_db.save_to_mongodb(mydb)
+        # self.print_right(f"流->数据库存储完成")
         self.print_info(f"来自文件的样本流数量:{len(lst_flows)}")
-        self.print(f"数据库「{this_dataset_dirname}:{this_subset_dirname}」的样本数量:{len(lst_flows)}")
+        # self.print(f"数据库「{this_dataset_dirname}:{this_subset_dirname}」的样本数量:{len(lst_flows)}")
         return lst_flows
         
 def get_purity(ytrue:List, ypred:List)->List:
@@ -367,15 +367,20 @@ if __name__ == "__main__":
     
     # 创建实验
     exp = Experiment(logger=mylogger)
-    onlyfromfile = False  # flag:是否只从文件读取数据
-    
+    # onlyfromfile = False  # flag:是否只从文件读取数据
+    onlyfromfile = True
+    # 不需要mongodb建立缓存，直接从本地读取
+
     print("onlyfromfile:", onlyfromfile)
+    # load_data已修改，把有关存入数据库的代码全部注释
     lst_black_flows = exp.load_data(dataset_dirname, blackset_dirname,root_dataset_dirpath, onlyfromfile)
     lst_white_flows = exp.load_data(dataset_dirname, whiteset_dirname,root_dataset_dirpath, onlyfromfile)
     print(lst_black_flows[0].get_BagID())
     # sys.exit(0)
     exp.print_info(f"黑样本流数量:{len(lst_black_flows)}")
     exp.print_info(f"白样本流数量:{len(lst_white_flows)}")
+
+
     # 提取包粒度的特征
     packetFeats = PacketFeatures(logger=mylogger)
     lst_pktFeats_black, lst_pktLabels_black = packetFeats.get_features_from_flows(lst_black_flows)
