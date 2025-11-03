@@ -55,7 +55,8 @@ root_dataset_dirpath = 'datasets'
 dataset_dirname = "118"
 
 blackset_dirname = "test_black" # in dir[dataset_name]
-whiteset_dirname = "test_white" # in dir[dataset_name]
+# whiteset_dirname = "test_white" # in dir[dataset_name]
+whiteset_dirname = "train_white"
 blackset_dirpath = os.path.join(dataset_dir, dataset_dirname, blackset_dirname)
 whiteset_dirpath = os.path.join(dataset_dir, dataset_dirname, whiteset_dirname)
 
@@ -103,6 +104,8 @@ def create_columns(n, m) -> List[str]:
 class Model():
 
     def __init__(self, sample_flows_num=1, sample_packets_num=15):
+        # model = Model(sample_flows_num=MAX_FLOWS, sample_packets_num=MAX_PACKETS)
+        # MAX_FLOW=2 MAX_PACKETS=25
         self.sample_flows_num = sample_flows_num
         self.sample_packets_num = sample_packets_num
         self.base_edges = construct_base_edges(self.sample_flows_num, self.sample_packets_num) # 基本图结构
@@ -117,13 +120,16 @@ class Model():
         # 创建一个空的 DataFrame 作为学习数据
         self.learning_dataframe = pd.DataFrame(columns=self.columns)
         index = 0
+        # trainsamples -> List[List[List[int]]] # 
         for onesample in tqdm(trainsamples[:]):
             row_data = [] # 每个样本创建一行数据, onesample是一个样本，一个矩阵
-            for each_flow in onesample:
-                row_data.extend(each_flow)
+            # onesample -> List[List[int]]，一个bag，包含两个List[int]，每一个List[int]是一个flow，每个int是一个packet
+            for flow in onesample:
+                row_data.extend(flow) # row_data -> List[int]
             # print(row_data)
             # print(len(row_data))
             # 检查长度
+            # row_data -> List[List]
             if len(row_data)>self.sample_flows_num*self.sample_packets_num:
                 row_data = row_data[:self.sample_flows_num*self.sample_packets_num]
             # 添加样本数据
@@ -148,7 +154,7 @@ class Model():
         # print(self.model.nodes())
 
         # 固定因果结构（论文原始方法）
-        print("base edges", self.base_edges)
+        # print("base edges", self.base_edges)
         self.this_edges = self.base_edges
         # 构建固定结构的贝叶斯网络
         self.model = BayesianNetwork(self.this_edges)
@@ -158,6 +164,7 @@ class Model():
 
     def predict(self, onesample: List[np.ndarray]): # 写一个算法，输入一个样本，输出预测的结果
         # onesample是一个样本，一个矩阵
+        # onesample -> List[List[int]] 一个bag，List[int]表示flow，int表示packet
         row_data = []
         for each_flow in onesample:
             row_data.extend(each_flow)
@@ -295,7 +302,7 @@ class Experiment(Operation):
         # # 流管理器存储流到数据库
         # flow_store_to_db.save_to_mongodb(mydb)
         # self.print_right(f"流->数据库存储完成")
-        self.print_info(f"来自文件的样本流数量:{len(lst_flows)}")
+        # self.print_info(f"来自文件的样本流数量:{len(lst_flows)}")
         # self.print(f"数据库「{this_dataset_dirname}:{this_subset_dirname}」的样本数量:{len(lst_flows)}")
         return lst_flows
         
@@ -303,6 +310,8 @@ def get_purity(ytrue:List, ypred:List)->List:
     '''
     get purity
     '''
+    # ytrue = np_pktLabels_all # 原始标签数据 按顺序显示是黑或白，也是8000个值
+    # ypred = y_pred # 预测的聚类信息 例如 [0, 1, 2, 3, 4, 5, 6, ...] #共8000个值，每个值在0~6之间，表示属于某个簇
     # get the number of clusters
     n_clusters = len(set(ypred))
     # get the number of samples
@@ -323,6 +332,8 @@ def get_purity(ytrue:List, ypred:List)->List:
         purity_clusters_b[i] = blacknum_clusters[i] / (blacknum_clusters[i] + whitenum_clusters[i])
         purity_clusters_w[i] = whitenum_clusters[i] / (blacknum_clusters[i] + whitenum_clusters[i])
         purity_clusters_maxeach[i] = max(purity_clusters_b[i], purity_clusters_w[i])
+
+        # 简单粗暴地以占比多的流量作为该簇的标签？
         if max(purity_clusters_b[i], purity_clusters_w[i]) == purity_clusters_b[i]:
             label_maxpurity_maxeach[i] = BLACK
         else:
@@ -338,14 +349,16 @@ def get_purity(ytrue:List, ypred:List)->List:
 def get_metric_PktClutering(ytrue:List, ypred:List)->float:
     # p: purity
     # c: cluster
-    p_c_b, p_c_w, p_c_avgmax, label_maxc = get_purity(ytrue, ypred)
+    p_c_b, p_c_w, p_c_avgmax, label_maxc = get_purity(ytrue, ypred) # 又统计了一次，重复做了三次操作
     if sum(label_maxc) > 0 and sum(label_maxc) < 1*len(label_maxc):
         return p_c_avgmax
     else:
         return 0.
 
 def get_mapclass_from_ypred(ytrue: List, ypred: List, threshold_black: float = 0.6,threshold_white: float = 0.6) -> List:
-    p_c_b, p_c_w, p_c_avgmax, label_maxc = get_purity(ytrue, ypred)
+    # ytrue = 真实标签
+    # ypred = 聚类结果 
+    p_c_b, p_c_w, p_c_avgmax, label_maxc = get_purity(ytrue, ypred) # 这里又调用了一次？
     y_mapclass = [0] * len(ytrue)
     num_black = 0
     num_white = 0
@@ -360,14 +373,15 @@ def get_mapclass_from_ypred(ytrue: List, ypred: List, threshold_black: float = 0
         else:
             y_mapclass[idx] = 2
             num_unknow += 1
-    print(f"MapClass:\tblack:{num_black},white{num_white},unknown:{num_unknow}")
+    # 这里的分类结果完全不对，white的个数为0，并且8000个样本中，MapClass:black:449,white:0,unknown:7551
+    print(f"MapClass:\tblack:{num_black},white:{num_white},unknown:{num_unknow}")
     return y_mapclass
 
 
 
 
 if __name__ == "__main__":
-    
+    # 数据库非必需
     #提前启动数据库：
     # 命令行输入：mongod --dbpath ~/mongodb_store/lib/ --logpath ~/mongodb_store/log/mongodb.log --fork
 
@@ -382,11 +396,12 @@ if __name__ == "__main__":
 
     print("onlyfromfile:", onlyfromfile)
     # load_data已修改，把有关存入数据库的代码全部注释
-    # lst_black_flows为黑样本流
+    # lst_black_flows为黑样本流 [Flow(1), .... Flow(2)]
     lst_black_flows = exp.load_data(dataset_dirname, blackset_dirname,root_dataset_dirpath, onlyfromfile)
     lst_white_flows = exp.load_data(dataset_dirname, whiteset_dirname,root_dataset_dirpath, onlyfromfile)
-    print(lst_black_flows[0].get_BagID())
-    # sys.exit(0)
+    # print(lst_black_flows)
+    # print(lst_black_flows[0].get_BagID())
+    
     exp.print_info(f"黑样本流数量:{len(lst_black_flows)}")
     exp.print_info(f"白样本流数量:{len(lst_white_flows)}")
 
@@ -397,15 +412,20 @@ if __name__ == "__main__":
     exp.print_info(f"黑样本包数量：{len(lst_pktFeats_black)}")
     lst_pktFeats_white, lst_pktLabels_white = packetFeats.get_features_from_flows(lst_white_flows)
     exp.print_info(f"白样本包数量：{len(lst_pktFeats_white)}")
+
+    
+    # 这里为什么要取4000？
     # 取固定个数个packet
     num_pkt_each = 4000# 黑白packet各取num_pkt_each个packet
     np_pktFeats_black = np.array(lst_pktFeats_black)[:num_pkt_each,:]
     np_pktFeats_white = np.array(lst_pktFeats_white)[:num_pkt_each,:]
     np_pktLabels_black = np.array(lst_pktLabels_black)[:num_pkt_each]
     np_pktLabels_white = np.array(lst_pktLabels_white)[:num_pkt_each]
+
+
     # 黑白packet拼接为所有packet：沿着第 0 轴拼接，即行数增加
     np_pktFeats_all = np.concatenate((np_pktFeats_black, np_pktFeats_white), axis=0) # output: 8000 * 3
-    # 8000 * 3
+    # 8000（4000 + 4000） * 3 （三元组）
     # 标签拼接 y_true   
     np_pktLabels_all = np.concatenate((np.array(np_pktLabels_black), np.array(np_pktLabels_white)), axis=0)
     y_true = np_pktLabels_all
@@ -414,6 +434,7 @@ if __name__ == "__main__":
     np_pktFeats_all = scaler.fit_transform(np_pktFeats_all)  
     print(np_pktFeats_all.shape)
     
+    # 这个7是怎么得来的？
     model_clustering = KMeans(n_clusters=7,random_state=RANDOMSEED+1)
     y_pred = model_clustering.fit_predict(np_pktFeats_all)
     purity_each_cluster_b, purity_each_cluster_w, avg_purity_max_cluster, label_each_cluster = get_purity(np_pktLabels_all, y_pred)
@@ -421,46 +442,82 @@ if __name__ == "__main__":
     exp.print_info(f"每个簇的白样本纯度:{purity_each_cluster_w}")
     exp.print_info(f"每个簇的最大纯度的平均值:{avg_purity_max_cluster}")
     exp.print_info(f"每个簇的最大纯度的标签:{label_each_cluster}")
+
+
     # 所有样本到簇心的距离
     all_distances_trainset = model_clustering.transform(np_pktFeats_all) # output: 8000 * 7
     
     # 计算指标并输出
     metric = get_metric_PktClutering(np_pktLabels_all, y_pred)
     exp.print_attention(f"聚类的指标:{metric}")
+    # 聚类的指标:0.704551584677865
+
+    # 这里的两个阈值又是怎么来的？
     y_mapclass = get_mapclass_from_ypred(y_true, y_pred,threshold_black=0.51, threshold_white=0.56)
+    # 正常来说黑样本4000在前，白样本4000在后
     
+    print(y_mapclass[:10])
+    print(y_true[0:10])
+
+    print(y_mapclass[4000:4010])
+    print(y_true[4000:4010])
+
+    # 这个y_mapclass在后面似乎又没用到？？？
+    # sys.exit(0)
+
+
     # 聚合
     switch_grain = Aggreator(logger=mylogger) # 聚合器
     lst_black_bags = switch_grain.aggregate(lst_black_flows)#  flow的lst -> bag的lst
     lst_white_bags = switch_grain.aggregate(lst_white_flows)
+
+    print(f"{len(lst_black_flows)}个黑样本根据源IP和目的IP被分为{len(lst_black_bags)}个包")
+    print(f"{len(lst_white_flows)}个白样本根据源IP和目的IP被分为{len(lst_white_bags)}个包")
+    print("每个Bag都是一对通信IP的流集合")
+    # sys.exit(0)
+    
+    # lst_black_bags -> List[Bag]
+    # lst_white_bags -> List[Bag]
+
     # 处理bag到packet的矩阵的映射
-    MAX_FLOWS = 2# 1
+    MAX_FLOWS = 2 #1
     MAX_PACKETS = 25
 
     VALID_FLOW_PACKETS = 10 # 有效流的最小包数
     offset = 5 # 往 右偏移offset个包， offset, offset+MAX_PACKETS
-    # 构造训练数据
+
+    # 构造训练数据(按照论文的意思应该只用良性流量，即White)
     allsamples = [] # 所有训练数据
     for onebag in tqdm(lst_white_bags[:], desc="构造训练数据"):
-
+        # onebag -> Bag
+        # onebag.lst_flows -> List[Flow]
+        # feats_flows -> List[List[List[float]]], label->List[int]
+        # feats_flow = [
+        # [[ len, direction, interval](一个包) , [, ,], .... ],
+        # [                                 ], // 一条流
+        # .....
+        # ]
         feats_flows, label = packetFeats.get_features_from_onebag(onebag.lst_flows)
-        # fe的每个元素是流，流的每个元素是包，包的元素是特征
+
         discarded_thisbag = False
         onesample = []
         for each_flow in feats_flows:
-            # 将each flow转化为矩阵
+            # each_flow -> List[List[float]]
+            # 一个流中所有的包，每个包以三元组的特征值作为表示
             np_each_flow = np.array(each_flow) # 一个流的矩阵样本 n_packets * 3
+            # np_each_flow.shape[0] 表示流中含有包数目
+            # np_each_flow.shape[1] = 3 即代表每个包的三元组
             if np_each_flow.shape[0] <= VALID_FLOW_PACKETS: # 不符合有效流过滤
                 discarded_thisbag = True
                 continue
 
-            # print(np_each_flow.shape)
-            # print(np_each_flow)
             scaler_np_each_flow = scaler.transform(np_each_flow) # 归一化
-            # print(scaler_np_each_flow.shape)
-            # print(scaler_np_each_flow)
+
             # 聚类
+            # model_clustering = KMeans(n_clusters=7,random_state=RANDOMSEED+1)
             output = list(model_clustering.predict(scaler_np_each_flow))
+            # output -> List[int] 每一个对应位置对应一个包被聚类的簇标号
+            
             
             # distances_to_centers = model_clustering.transform(scaler_np_each_flow)
             # print(output) # 簇标签->score
@@ -482,26 +539,37 @@ if __name__ == "__main__":
 
             if len(output) < MAX_PACKETS+offset:
                 output.extend([-1] * (MAX_PACKETS+offset - len(output)))
+                # 不足30的部分补足-1？
             # output 超过截断
             if len(output) > MAX_PACKETS+offset:
+                # 超过30截取
                 output = output[:MAX_PACKETS+offset]
+            # 从offset位置开始截取
             output = output[offset:]
             # print(len(output))
-            onesample.append(output)
+            onesample.append(output) 
+        
         # onesample 不足补-1
+        # onesample -> List[List[int]] 每一项，对应一个Flow，每一个Flow List中的每一个值表示
+        # 包属于的簇数
         if onesample == [] or discarded_thisbag:
             continue
         if len(onesample) < MAX_FLOWS:
+            # 补全两个流
             onesample.extend([[-1] * MAX_PACKETS] * (MAX_FLOWS - len(onesample)))
         if len(onesample) > MAX_FLOWS:
+            # 截断
             onesample = onesample[:MAX_FLOWS]
         onesample = np.array(onesample) # 一个bag的矩阵样本
-    
-        allsamples.append(onesample)
+        # print(f"一个bag(一次会话)的样本:{onesample.shape}")
+        # 按照原始参数，(2, 25) 也就是一次会话（文中的一个bag）中，只取了2个流，每个流取25个包
+        allsamples.append(onesample) # List[List[List[int]]]
 
     print("allsamples:", len(allsamples))
     print("each bag:", len(allsamples[0]))
     print("each flow:", len(allsamples[0][0]))
+    
+    # 如果读取test_white，只有334个bag，每个包的数据为两条流，每条流25个包（packet）
     
     # 建bayesnet
     ## ##################   训练 # ################## 
@@ -530,7 +598,8 @@ if __name__ == "__main__":
     # sys.exit(0)
     print(lst_right_packets_ratio_traindata)
     threshold_black = sum(lst_right_packets_ratio_traindata) / len(lst_right_packets_ratio_traindata)
-    input("pause:  训练阶段白样本阈值")
+    # 当后续某个样本预测正确率超过threshold_black时，说明为黑样本
+    # input("pause:  训练阶段白样本阈值")
     
     ##################### 测试 ###################
     
@@ -576,10 +645,14 @@ if __name__ == "__main__":
     print("allsamples:", len(blacksamples))
     print("each bag:", len(blacksamples[7]))
     print("each flow:", len(blacksamples[5][0]))
+    
+    # 同样的原理构建黑样本测试集 blacksamples -> List[List[List[int]]]
+    # 多个bag，每个bag下多条flow（默认为2），每个flow有多个packet（默认为25），
+    # 每个packet用一个int值表示
 
     # ################## 测试 # ################## 
         # 建bayesnet
-    print("测试数据：")
+    # print("测试数据：")
     lst_right_packets_ratio_testdata = []
     for onesample in tqdm(blacksamples[:50],"testing phase"):
         cnt_predict_right, cnt_predict_wrong, infertime = model.predict(onesample)
@@ -588,5 +661,18 @@ if __name__ == "__main__":
         lst_right_packets_ratio_testdata.append(right_packets_ratio)
     # model.predict(allsamples[0])
     print(lst_right_packets_ratio_testdata)
-    print(MAX_FLOWS,MAX_PACKETS)
+
+    
+    # print(MAX_FLOWS,MAX_PACKETS)
     # input("pause:  训练阶段黑样本阈值")
+
+    # 计算测试集准确率
+    correctNum = 0
+    sum = len(lst_right_packets_ratio_testdata)
+
+    # blacksamples -> List[List[List[int]]]
+    for ratio in lst_right_packets_ratio_testdata:
+        if ratio >= threshold_black:
+            correctNum += 1
+
+    print(correctNum / sum)

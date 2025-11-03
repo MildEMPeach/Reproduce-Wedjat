@@ -212,6 +212,7 @@ class Processor(Operation):
             return WHITE
         else:
             return UNKNOWN
+    
 
     def process_allfile(self, lst_filepath:List[str], label=UNKNOWN)->List[Flow]:
         lst_flow = []

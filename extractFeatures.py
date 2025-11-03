@@ -48,19 +48,21 @@ class PacketFeatures(Operation):
         # return features , labels  for one flow
         # features: List[List[float]]
         lst_pktFeats_oneflow = []
-        lst_pkts = flow.lst_packets
+        lst_pkts = flow.lst_packets # lst_pkts -> List[Packet]
         for pkt_no, this_pkt in enumerate(lst_pkts[:]):
             if pkt_no == 0:
-                first_pkt = lst_pkts[0]
+                first_pkt = lst_pkts[0]   
                 first_feats = [first_pkt.length,first_pkt.direction, 0.0]
                 lst_pktFeats_oneflow.append(first_feats)
                 continue
             pre_pkt = lst_pkts[pkt_no-1]
             ipt = this_pkt.timestamp - pre_pkt.timestamp
             this_feats = [this_pkt.length,this_pkt.direction, ipt]
-            lst_pktFeats_oneflow.append(this_feats)
+            # 三元组，[包长, 包方向，时间间隔]
+            lst_pktFeats_oneflow.append(this_feats) # List[List[Float]]
         # labels
-        lst_pktLabels_oneflow = [flow.label] * len(flow.lst_packets)
+        # 把流的label扩展到包级别
+        lst_pktLabels_oneflow = [flow.label] * len(flow.lst_packets) # List[float]
         return lst_pktFeats_oneflow, lst_pktLabels_oneflow
 
     def get_features_from_flows(self, lst_flow: List[Flow], scalar=None)-> Tuple[List[List[float]],List[int]]:
@@ -73,14 +75,16 @@ class PacketFeatures(Operation):
         
         return lst_pktFeats_allflows, lst_pktLabels_allflows
 
-    def get_features_from_onebag(self, lst_flow: List[Flow], scalar=None)-> Tuple[List[List[float]],List[int]]:
+    def get_features_from_onebag(self, lst_flow: List[Flow], scalar=None)-> Tuple[List[List[List[float]]],List[int]]:
         # 输入：一个bag中的flows : bag.lst_flows
         lst_pktFeats_allflows = []
         lst_pktLabels_allflows= []
         for flow in lst_flow:
+            # flow -> Flow
             lst_pktFeats_oneflow, lst_pktLabels_oneflow = self._get_features_from_oneflow(flow)
-            lst_pktFeats_allflows.append(lst_pktFeats_oneflow)
-            lst_pktLabels_allflows.append(lst_pktLabels_oneflow)
+            # lst_pktFeats_oneflow -> List[List[Float]], lst_pktLabels_oneflow -> List[Float]
+            lst_pktFeats_allflows.append(lst_pktFeats_oneflow) # List[List[List[Float]]]    
+            lst_pktLabels_allflows.append(lst_pktLabels_oneflow) # List[List[Float]]
         
         return lst_pktFeats_allflows, lst_pktLabels_allflows
 
